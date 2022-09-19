@@ -1,0 +1,90 @@
+#' ---
+#' title: "Assignment 2"
+#' author: "Tejesh Alaparthi"
+#' date: "Sep 19th, 2022"
+#' ---
+
+names(Typical_Employee_Survey_Data)
+ncol(Typical_Employee_Survey_Data)
+nrow(Typical_Employee_Survey_Data)
+dim(Typical_Employee_Survey_Data)
+head(Typical_Employee_Survey_Data)
+tail(Typical_Employee_Survey_Data)
+str(Typical_Employee_Survey_Data)
+
+class(Typical_Employee_Survey_Data$Gender)
+Typical_Employee_Survey_Data$Gender <- as.factor(Typical_Employee_Survey_Data$Gender)
+class(Typical_Employee_Survey_Data$Gender)
+
+str(Typical_Employee_Survey_Data)
+
+
+# Rows
+
+Typical_Employee_Survey_Data[2,]
+
+# Combined
+
+Typical_Employee_Survey_Data[2:3,c("Age")]
+Typical_Employee_Survey_Data[2:3,2:3]
+
+#Levels
+
+Typical_Employee_Survey_Data$Gender
+table(Typical_Employee_Survey_Data$Gender)
+table(Typical_Employee_Survey_Data$Age)
+table(Typical_Employee_Survey_Data$Age, Typical_Employee_Survey_Data$Gender)
+
+#filtering
+
+Typical_Employee_Survey_Data[Typical_Employee_Survey_Data$Age == "20",]
+
+#ordering
+
+Typical_Employee_Survey_Data = Typical_Employee_Survey_Data[order(-Typical_Employee_Survey_Data$Age),]
+Typical_Employee_Survey_Data = Typical_Employee_Survey_Data[order(Typical_Employee_Survey_Data$Age),]
+
+# Change Column Name
+
+names(Typical_Employee_Survey_Data)[5] <- "Longevity"
+head(Typical_Employee_Survey_Data)
+
+#Graphing
+
+barplot(Typical_Employee_Survey_Data$Age, main = "Age of Employees", xlab = "Employees", ylab = "Age", col = "Blue")
+pie(Typical_Employee_Survey_Data$Age)
+pie(Typical_Employee_Survey_Data$Age,label = Typical_Employee_Survey_Data$Gender, main = "Gender of Employees")
+
+
+stem(Typical_Employee_Survey_Data$Longevity)
+hist(Typical_Employee_Survey_Data$Age)
+boxplot(Typical_Employee_Survey_Data$Age)
+boxplot(Typical_Employee_Survey_Data$Age,Typical_Employee_Survey_Data$Gender)
+
+## Summary Stats
+
+min(Typical_Employee_Survey_Data$Age)
+max(Typical_Employee_Survey_Data$Age)
+range(Typical_Employee_Survey_Data$Age)
+StatRange = max(Typical_Employee_Survey_Data$Age) - min(Typical_Employee_Survey_Data$Age)
+mean(Typical_Employee_Survey_Data$Age)
+sd(Typical_Employee_Survey_Data$Age)
+var(Typical_Employee_Survey_Data$Age)
+sqrt(var(Typical_Employee_Survey_Data$Age))
+fivenum(Typical_Employee_Survey_Data$Age)
+IQR(Typical_Employee_Survey_Data$Age)
+quantile(Typical_Employee_Survey_Data$Age)
+summary(Typical_Employee_Survey_Data$Age)
+boxplot.stats(Typical_Employee_Survey_Data$Age)
+boxplot.stats(Typical_Employee_Survey_Data$Age)$out
+
+# Entire data Summary
+
+summary(Typical_Employee_Survey_Data)
+
+by(Typical_Employee_Survey_Data$Age,Typical_Employee_Survey_Data$Gender,mean)
+by(Typical_Employee_Survey_Data$Age,Typical_Employee_Survey_Data$Gender,sd)
+by(Typical_Employee_Survey_Data$Age,Typical_Employee_Survey_Data$Gender,summary)
+
+aggregate(Typical_Employee_Survey_Data$Age,list("Type" = Typical_Employee_Survey_Data$Gender),median)
+aggregate(Typical_Employee_Survey_Data$Age,list("Type" = Typical_Employee_Survey_Data$Gender),summary)
