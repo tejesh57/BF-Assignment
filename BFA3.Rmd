@@ -1,0 +1,56 @@
+#' ---
+#' title: "BF Assignment 3"
+#' author: "Tejesh Alaparthi"
+#' date: "Sep 26th, 2022"
+#' ---
+
+```{r}
+library(fpp)
+library(fpp2)
+usmelec
+plot(usmelec)
+# This time series shows, strong seasonal pattern, an obvious increasing trend, and increasing variation over time.
+#Due to the increasing variation we will consider the log-transformed time series.
+elecmat = cbind("Billions (kWh)"=usmelec,"log Billions (kWh)"=log(usmelec))
+autoplot(elecmat,facet=T) + xlab("Year") + ggtitle("Monthly Electricity Generation")
+
+# We can see that there is an increasing trend and seasonality in the time series. The same pattern is repeating every year from 1973 to 2010.
+# Now we can predict the ACF from the plot.Since there is an increasing trend in the plot that is both variables move in the same direction which gives a positive correlation coefficient and you will find nearby lags to be significantly correlated and as a result of seasonality you will find there is a repetitive trend in the ACF.
+
+ggseasonplot(usmelec)+ ylab("Billion KWH")+ ggtitle("Season plot: electricity generated monthly")
+
+# from the ggseasonplot above we can see the difference of electricity generated within the months of every year. Starting from january the electricity generated decreased gradually and it increases during the summer to reach a yearly high and then experiences a drop throughout the fall until winter.
+
+ggtsdisplay(usmelec)
+
+# The ACF plot shows positive correlation coefficient and nearby lag intervals are strongly correlated that tells us the plot has a trend. We can see a repetetive trend in the ACF which means the plot shows seasonality.
+
+
+elec <- HoltWinters(usmelec)
+attributes(elec)
+plot(elec)
+
+# The Holtwinters graph above fits with our data quite well which means it is ready for prediction. 
+
+elec_f <- forecast(elec)
+attributes(elec_f)
+plot(elec_f$residuals)
+
+# The residuals graph shows no trend which means that shows it is a good forecast.
+
+hist(elec_f$residuals)
+
+# From the histogram you can see that it is symmetric which means the mean is almost zero that shows it is a good forcast.
+
+Acf(elec_f$residuals)
+# The ACF shows us the nearby lags are not significantly correlated which means there is no trend in the residuals plot i.e it is random, which meets the properties of a good forecast. 
+
+accuracy(elec_f)
+
+# Here the mean error is near to zero which suggests it is good forecast model.
+
+# I have chosen the whole ts because there are no hikes at irregular intervals in the plot which cannot be predicted. The plot is quite straight forward and foreseeable. 
+ 
+
+```
+  
