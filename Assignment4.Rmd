@@ -1,0 +1,78 @@
+---
+title: "Assignment 4"
+author: "Tejesh Alaparthi "
+date: "10/02/2022"
+output: html_document 
+---
+
+```{r}ibrary(fpp)
+library(fpp2)
+library(TTR)
+
+attributes(usmelec)
+plot(usmelec)
+Acf(usmelec)
+
+mean_forecast <- meanf(usmelec,5)
+
+plot(mean_forecast)
+
+naive_forecast <- naive(usmelec,5)
+plot(naive_forecast)
+# In the naive forecast method the last observed value is considered as the forecast value for the given period.We have set the period as 5 which means it will forecast for the upcoming 5 months.Since it takes the last observed value we can see the forecast continues from the last obsereved value and remains constant for the 5 months.
+
+
+# Random Walk
+rwf_forecast <- rwf(usmelec,5)
+rwf_forecast <- rwf(usmelec,5, drift=TRUE)
+plot(rwf_forecast)
+# In the Random walk forecasting model the forecast value is calculated by addig the rate of change in value in the previous period to the last observed value. Here in this case we can see the forecasted line has a small increasing trend which is because there was a increasing trend in the last obsereved period.
+
+# Seasonal Naive
+snaive_forecast <- snaive(usmelec,5)
+plot(snaive_forecast)
+
+# In the seasonal naive method the forecasted value in the current season is equal to the value that was observed in the previous season.It is a better forecast compared to naive and mean forecast as we can see there is an decreasing trend for the 5 periods that was also obsereved in the previous seasons but the same as the last season.
+
+
+MA5_forecast <- ma(usmelec,order=5)
+plot(MA5_forecast)
+# Moving average method is calculated by adding up all the data points during a specific period and dividing the sum by the number of time periods and updating every new forecast value. 
+MA9_forecast <- ma(usmelec,order=9)
+
+# plot all in a single chart
+plot(mean_forecast)
+lines(naive_forecast$mean,col="red")
+lines(rwf_forecast$mean,col="green")
+lines(snaive_forecast$mean,col="black")
+lines(MA5_forecast,col="Pink")
+lines(MA9_forecast,col="Blue")
+# As we can all forecast lines in one plot, the blue line considering avg of 9 periods is less accurate that the pink line which is the moving average of order 5 which is because the seasonality is 6 months. The black line is the snaive method showed a stronger forecast here as it calculates the seasonality as well.
+
+attributes(naive_forecast)
+
+ets_forecast <- ets(usmelec)
+plot(ets_forecast)
+# We an see the trend and seasonality components of our data using the ets function.There is an increasing trend.It shows seasonality clearly.
+
+attributes(ets_forecast)
+ets_forecast$mse
+
+# HoltWinters
+HW_forecast <- HoltWinters(usmelec)
+plot(HW_forecast)
+SSE_Simple <- HoltWinters(usmelec,beta=FALSE,gamma=FALSE)
+attributes(SSE_Simple)
+plot(SSE_Simple)
+# Since we have omitted the beta and gamma values. the smoothening of trend and seasonality is removed.
+
+SSE_Simple$SSE
+head(SSE_Simple$fitted)
+
+#Forecast
+forecast_ets_1 <- forecast.ets(ets_forecast, h=5)
+plot(forecast_ets_1)
+forecast_ets_2 <- forecast(ets_forecast, h=5)
+plot(forecast_ets_2)
+```
+
