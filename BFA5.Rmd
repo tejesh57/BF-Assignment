@@ -1,0 +1,73 @@
+---
+title: "BF HW-5"
+author: "ta560@scarletmail.rutgers.edu"
+date: "10/13/2022"
+output: html_document
+---
+  
+## Decompose
+  
+* Data Set - usmelec
+
+```{r}
+library(fpp)
+library(fpp2)
+
+head(usmelec)
+plot(usmelec)
+stl_decomp <- stl(usmelec,s.window ="periodic")
+plot(stl_decomp)
+attributes(stl_decomp)
+```
+
+* The function decompose is used to break the data into components that is trend, seasonality and the irregularity.
+* From the above plot, we can see that there is a seasonality in the data and and an upward trend as well.
+* The irregularity component gradually increases through the period.
+
+```{r}
+seasadj(stl_decomp)
+
+plot(usmelec)
+lines(seasadj(stl_decomp), col="Red")
+```
+
+* The function seasadj adjusts the seasonality of the data and gives the data without the seasonal component.
+* The plot above shows the data without seasonal component in red color. 
+
+```{r}
+f_stl <- forecast(stl_decomp,h=15)
+f_stl
+plot(f_stl)
+```
+
+* The f_stl above is forecasting the data. the "h" mentioned is the time period for which we need the forecast. 
+* In the plot, the dark and light gray area is the 85% and 95% confidence interval of the forecast respectively.
+
+```{r}
+f_stl2 <- forecast(stl_decomp,h=50)
+plot(f_stl2)
+```
+
+* We have taken value of H as 100 to get a better understanding of the data.
+* We can see that when the time period increases the confidence interval also increases.
+* The forecast gets poorer we try to forcast it for longer period.
+
+## lets try a different way to decompose
+
+```{r}
+decomp_usmelec <- decompose(usmelec)
+
+attributes(decomp_usmelec)
+seasadj(decomp_usmelec)
+```
+
+* decompose() function is another way we can use to decompose our data.
+* In the attribute we can see that there are trend, seasonal, and random variables.
+* seasadj also is useful to adjust the seasonal variation as the decompose() function.
+
+```{r}
+plot(decomp_usmelec)
+```
+
+* The order of trend, seasonal, and irregularity changes while the visual remains the same.
+* "random" is used to show the irregularity component and it is shown in the form of a line graph.
