@@ -1,0 +1,155 @@
+---
+title: "BFA6"
+author: "ta560@scarletmail.rutgers.edu"
+date: "11/14/2022"
+output: html_document
+---
+  
+```{r}
+library(fpp)
+library(fpp2)
+library(forecast)
+```
+
+## Data set - usmelec (fpp)
+
+#### plot of usmelec
+
+```{r}
+plot(usmelec, main = 'Monthly electricity generated in the US', xlab = 'Year', ylab = 'Electricity units')
+```
+
+* Trend and Seasonality can be seen in the plot.
+* There is an increase of residuals when we perform all the tests which indicates that the latest data is different from the past data.
+* So,lets consider a window of the data from 2000.
+
+#### Window Plot
+
+```{r}
+usmelec_win <- window(usmelec, start = 2000)
+plot(usmelec_win, main = 'Monthly electricity generated in the US', xlab = 'Year', ylab = 'Electricity generated')
+```
+
+* Even here, we can observe both trend and seasonality from the first glance.
+* Lets do an Acf function.
+
+#### Acf plot
+
+```{r}
+Acf(usmelec_win, main = 'Acf Plot - Usmelec from 2000')
+```
+
+* The Acf plot shows both trend and seasonality present in the plot.
+* Since there is seasonality we use both nsdiffs and ndiffs.
+
+## ARIMA for data with seasonal component
+
+#### Checking the Differencing needed for seasonal component
+
+```{r}
+nsdiffs(usmelec_win) #nsdiffs is for seasonal
+```
+
+* nsdiffs is use to know how many differences we need to do for seasonality component.
+* We first go ahead with seasonality beacuse most of the cases, ones we do this, trend takes care of itself.
+
+#### Checking the Differences needed
+
+```{r}
+ndiffs(usmelec_win)
+```
+
+* We got ndiffs as 1 initially. 
+* Let us first perform the differences for seasonal data and check ndiffs again.
+
+#### Rechecking the differencing needed after performing the seasonal differencing
+
+```{r}
+ndiffs((diff(usmelec_win,12))) #12 because it is monthly
+```
+
+* As mentioned above, we can see that the ndiffs now becomes zero indicating that the trend component took care of itself.
+
+#### Acf and Pacf plots
+
+```{r}
+tsdisplay(diff(usmelec_win,12))
+```
+
+* In the Acf plot we can see that the p value is 11.
+
+#### Arima Model
+
+```{r}
+arima_fit <- auto.arima(usmelec_win,trace=TRUE, stepwise = FALSE )
+arima_fit
+```
+
+* The system runs the auto arima and gives out the best model for which the AIC value is the lowest.AIC value is 1102.04 from the arima function.
+* The model tested multiple p,q,P,Q values other than the ones we predicted earlier.
+
+#### Arima Model attributes
+
+```{r}
+attributes(arima_fit)
+```
+
+#### Plot the forecast of the Arima model with confidence interval of 99% 
+
+```{r}
+plot(forecast(arima_fit,h=5,level=c(99)), main = 'Forecast of the ARIMA model', xlab = 'Year', ylab = 'Electricity Generated')
+```
+
+## Residual Analysis
+
+#### Acf of Residuals
+
+```{r}
+Acf(arima_fit$residuals)
+```
+
+* We can see there is white noice in the acf plot.
+* No data crosses the confidence interval line which tells us it is a good forecast.
+
+#### Box-Ljung test
+
+```{r}
+Box.test(residuals(arima_fit), lag=20, type="Ljung")
+```
+
+* We got p-value 0.9666 which is greater than 0.05 means that the null hypothesis is true
+
+#### Residuals plot
+
+```{r}
+plot.ts(residuals(arima_fit))
+```
+
+* The residuals look random and mean to be around zero.
+* This means its a very good forecasting model.
+
+#### Histogram plot of residuals
+
+```{r}
+hist(arima_fit$residuals)
+```
+
+* The histogram above shows residuals have a mean around zero.
+* This distribution does not look like a perfect normal distribution.
+
+#### TSDiagram of the ARIMA model
+
+```{r}
+tsdiag(arima_fit)
+```
+
+* The function tsdiag() shows the overall residual analysis plots together.
+* The standardized residuals plot looks normal. Two of the residuals are very close to touch the z-score of 2.
+* There is only 1 significant value in the Acf plot which crosses the confidence interval.
+* We can see all the p-values in Ljung-Box test are above the confidence level, which means residuals are random.
+* Overall, this ARIMA model seems a good fit.
+
+
+
+
+
